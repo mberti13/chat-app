@@ -1,6 +1,6 @@
 
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
 // establishes connection from front to backend socket.io
@@ -9,22 +9,34 @@ const socket = io.connect("http://localhost:3001");
 
 
 function App() {
+  //state for message field
+  const [message, setMessage] = useState("");
+  const [messageReceived, setMessageReceived ] = useState("");
+
+
+
 // socket io frontend function
 const sendMessage = () =>{
-  socket.emit("send-message", { message: "Hello"});                                                                                       // socket.emit();
+  socket.emit("send-message", { message });                                                                                       // socket.emit();
 };
 
 //function to listen for front end changes
 useEffect(() =>{
   socket.on("receive-message", (data) =>{
-    alert(data.message);
-  })
+    setMessageReceived(data.message);
+  });
 }, [socket]);
 
   return (
     <div className="App">
-      <input placeholder='Message...' />
+      <input placeholder='Message...' 
+      onChange={(event) =>{
+        setMessage(event.target.value);
+      }} 
+      />
       <button onClick={sendMessage}>Send</button>
+      <h1>Message:</h1>
+      {messageReceived}
     </div>
   );
 }
