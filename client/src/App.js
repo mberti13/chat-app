@@ -1,23 +1,30 @@
-import logo from './logo.svg';
+
 import './App.css';
+import { useEffect } from 'react';
+import io from 'socket.io-client';
+
+// establishes connection from front to backend socket.io
+// socket to can be used to emit or listen to socket events
+const socket = io.connect("http://localhost:3001");
+
 
 function App() {
+// socket io frontend function
+const sendMessage = () =>{
+  socket.emit("send-message", { message: "Hello"});                                                                                       // socket.emit();
+};
+
+//function to listen for front end changes
+useEffect(() =>{
+  socket.on("receive-message", (data) =>{
+    alert(data.message);
+  })
+}, [socket]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input placeholder='Message...' />
+      <button onClick={sendMessage}>Send</button>
     </div>
   );
 }
