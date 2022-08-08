@@ -3,6 +3,7 @@ const { createServer } = require('http');
 const app = express();
 const { Server } = require('socket.io');
 const cors = require('cors');
+const { Socket } = require('dgram');
 
 //middleware for cors 
 app.use(cors());
@@ -21,13 +22,17 @@ const io = new Server(httpServer, {
 
 //listens for emit/listen events in socket.io
 io.on('connection', (socket) =>{
-    // ...
     // Measure how many user's are connected in console
     console.log(`User connected: ${socket.id}`)
 
+    // TODO: Look into room logic for private chats
+    // socket.on('join-room', (data) =>{
+    //     socket.join(data);
+    // });
+
     socket.on("send-message", (data) =>{
-        // console.log(data);
-        socket.broadcast.emit("receive-message", data)
+        // socket.broadcast.emit("receive-message", data)
+        socket.to(data.room).emit("receive-message", data);
     });
 });
 
